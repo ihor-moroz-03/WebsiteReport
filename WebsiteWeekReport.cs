@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net;
+using Algorithms;
 
 namespace WebsiteReport
 {
@@ -35,32 +33,6 @@ namespace WebsiteReport
             }
         }
 
-        public static DayOfWeek GetMostPolpularDay(IEnumerable<Visit> visits)
-        {
-            int[] counter = new int[7];
-            foreach (Visit visit in visits)
-                counter[(int)visit.day]++;
-
-            DayOfWeek max = 0;
-            for (int i = 1; i < 7; ++i)
-                if (counter[i] > counter[(int)max])
-                    max = (DayOfWeek)i;
-            return max;
-        }
-
-        public static int GetMostPopularHour(IEnumerable<Visit> visits)
-        {
-            int[] counter = new int[24];
-            foreach (Visit visit in visits)
-                counter[visit.time.Hour]++;
-
-            int max = 0;
-            for (int i = 1; i < 24; ++i)
-                if (counter[i] > counter[max])
-                    max = i;
-            return max;
-        }
-
         public string GetReport()
         {
             var report = new List<string>();
@@ -70,13 +42,13 @@ namespace WebsiteReport
                 report.Add(
                     $"ip: {pair.Key}:\n" +
                     $"{pair.Value.Count} visits\n" +
-                    $"{GetMostPolpularDay(pair.Value)} is most popular\n" +
-                    $"{GetMostPopularHour(pair.Value)} o'clock is most popular\n"
+                    $"{Statistics.Mode(pair.Value.Select(visit => visit.day))} is most popular\n" +
+                    $"{Statistics.Mode(pair.Value.Select(visit => visit.time.Hour))} o'clock is most popular\n"
                 );
                 allRecords.AddRange(pair.Value);
             }
 
-            report.Add($"\n{GetMostPopularHour(allRecords)} o'clock is most popular among all IPs");
+            report.Add($"\n{Statistics.Mode(allRecords.Select(visit => visit.time.Hour))} o'clock is most popular among all IPs");
 
             return string.Join<string>('\n', report);
         }
