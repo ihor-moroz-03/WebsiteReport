@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Linq;
 using Algorithms;
 
 namespace WebsiteReport
@@ -42,13 +43,13 @@ namespace WebsiteReport
                 report.Add(
                     $"ip: {pair.Key}:\n" +
                     $"{pair.Value.Count} visits\n" +
-                    $"{Statistics.Mode(pair.Value.Select(visit => visit.day))} is most popular\n" +
+                    $"{pair.Value.Select(visit => visit.day).Mode()} is most popular\n" +
                     $"{Statistics.Mode(pair.Value.Select(visit => visit.time.Hour))} o'clock is most popular\n"
                 );
                 allRecords.AddRange(pair.Value);
             }
 
-            report.Add($"\n{Statistics.Mode(allRecords.Select(visit => visit.time.Hour))} o'clock is most popular among all IPs");
+            report.Add($"\n{allRecords.Select(visit => visit.time.Hour).Mode()} o'clock is most popular among all IPs");
 
             return string.Join<string>('\n', report);
         }
